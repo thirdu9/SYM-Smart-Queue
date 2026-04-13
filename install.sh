@@ -10,7 +10,8 @@ echo "Installing C++ build dependencies..."
 apt-get update
 apt-get install -y build-essential git python3 python3-dev pkg-config \
     libfftw3-dev libavcodec-dev libavformat-dev libavutil-dev \
-    libswresample-dev libsamplerate0-dev libtag1-dev libyaml-dev curl unzip
+    libswresample-dev libsamplerate0-dev libtag1-dev libyaml-dev \
+    qtbase5-dev qtbase5-dev-tools qtchooser curl unzip
 
 # 2. Clone and Compile Gaia
 echo "Cloning and compiling Gaia..."
