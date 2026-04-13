@@ -1,0 +1,21 @@
+[
+  {
+    "guid": "PUT_YOUR_PLUGIN_GUID_HERE",
+    "name": "SymSmartQueue",
+    "description": "AI-powered heuristic mood tracking and dynamic queue generation.",
+    "overview": "Extracts acoustic features (BPM, Mood, Danceability) natively and generates dynamic playlists.",
+    "owner": "YourName",
+    "category": "General",
+    "imageUrl": "#",
+    "versions": [
+      {
+        "version": "1.0.0.0",
+        "changelog": "Initial release with Docker self-compilation engine.",
+        "targetAbi": "10.8.0.0",
+        "sourceUrl": "#",
+        "checksum": "5a2ddabe08d98da25819c9eb7d900336",
+        "timestamp": "2024-05-15T00:00:00Z"
+      }
+    ]
+  }
+]
