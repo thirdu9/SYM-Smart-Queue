@@ -6,7 +6,7 @@
     "overview": "Extracts acoustic features (BPM, Mood, Danceability) natively and generates dynamic playlists.",
     "owner": "thirdu9",
     "category": "Music",
-    "imageUrl": "#",
+    "imageUrl": "https://github.com/thirdu9/SYM-Smart-Queue/blob/main/image.png",
     "versions": [
       {
         "version": "1.0.0.0",
