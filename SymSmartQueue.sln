@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymSmartQueue", "SymSmartQueue.csproj", "{63DFD6F0-071C-F97F-72F7-4292E8C14397}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63DFD6F0-071C-F97F-72F7-4292E8C14397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63DFD6F0-071C-F97F-72F7-4292E8C14397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63DFD6F0-071C-F97F-72F7-4292E8C14397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63DFD6F0-071C-F97F-72F7-4292E8C14397}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {16E9E3A9-F5F7-4C87-B71E-2B06FB7676F2}
+	EndGlobalSection
+EndGlobal

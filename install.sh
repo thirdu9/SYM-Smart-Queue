@@ -42,7 +42,7 @@ chmod +x "$SYM_DIR/essentia_streaming_extractor_music"
 
 # 5. Download ML Models and YAML
 echo "Downloading ML models..."
-curl -L -o "$SYM_DIR/sym_models.zip" "https://github.com/thirdu9/SYM-Smart-Queue/releases/download/SVM_Models/svm_models.zip"
+curl -L -o "$SYM_DIR/sym_models.zip" "https://github.com/thirdu9/SYM-Smart-Queue/releases/download/v1.0.0/svm_models.zip"
 
 echo "Extracting models..."
 unzip -o "$SYM_DIR/sym_models.zip" -d "$SYM_DIR/"
