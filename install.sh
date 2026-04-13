@@ -20,7 +20,7 @@ rm -rf gaia
 git clone https://github.com/MTG/gaia.git
 cd gaia
 python3 waf configure --mode=release
-python3 waf
+python3 waf -j 1
 python3 waf install
 ldconfig # Crucial: Refreshes system libraries so Essentia can find libgaia2
 
@@ -33,7 +33,7 @@ cd essentia
 python3 -m venv build_env
 ./build_env/bin/python3 -m pip install setuptools
 ./build_env/bin/python3 waf configure --mode=release --with-examples --with-gaia
-./build_env/bin/python3 waf
+./build_env/bin/python3 waf -j 1
 
 # 4. Move the compiled binary to the PERSISTENT volume
 echo "Moving compiled binary to persistent volume..."
