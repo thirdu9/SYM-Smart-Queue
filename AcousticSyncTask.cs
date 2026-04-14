@@ -1,5 +1,12 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
+using MediaBrowser.Common.Configuration; // Crucial for dynamic paths
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Tasks;
 using Microsoft.Extensions.Logging;
@@ -12,14 +19,15 @@ namespace SymSmartQueue.Tasks
         private readonly ILibraryManager _libraryManager;
         private readonly DatabaseManager _dbManager;
         private readonly ILogger<AcousticSyncTask> _logger;
-        private readonly string _pluginDir;
+        private readonly IApplicationPaths _appPaths; // Injected path resolver
 
-        public AcousticSyncTask(ILibraryManager libraryManager, DatabaseManager dbManager, ILogger<AcousticSyncTask> logger)
+        // Added IApplicationPaths to the constructor
+        public AcousticSyncTask(ILibraryManager libraryManager, DatabaseManager dbManager, ILogger<AcousticSyncTask> logger, IApplicationPaths appPaths)
         {
             _libraryManager = libraryManager;
             _dbManager = dbManager;
             _logger = logger;
-            _pluginDir = "/config/plugins/SymSmartQueue";
+            _appPaths = appPaths; 
         }
 
         public string Name => "SYM Local Acoustic Analysis";
@@ -43,12 +51,14 @@ namespace SymSmartQueue.Tasks
         {
             _logger.LogInformation("[SYM Engine] Starting Native Acoustic Analysis...");
 
-            string essentiaBinary = Path.Combine(_pluginDir, "essentia_streaming_extractor_music");
-            string profileYaml = Path.Combine(_pluginDir, "profile.yaml");
+            // Dynamically resolve the persistent configurations folder
+            var symDir = Path.Combine(_appPaths.PluginConfigurationsPath, "SymSmartQueue");
+            string essentiaBinary = Path.Combine(symDir, "essentia_streaming_extractor_music");
+            string profileYaml = Path.Combine(symDir, "profile.yaml");
 
             if (!File.Exists(essentiaBinary) || !File.Exists(profileYaml))
             {
-                _logger.LogError("[SYM Engine] Binary or YAML missing! Halting.");
+                _logger.LogError("[SYM Engine] Binary or YAML missing at {Path}! Halting.", symDir);
                 return;
             }
 
@@ -109,14 +119,11 @@ namespace SymSmartQueue.Tasks
                         double bpm = 0, danceability = 0, aggressive = 0, happy = 0, party = 0, relaxed = 0, sad = 0, electronic = 0, acoustic = 0, voice = 0;
                         string rhythmClass = "unknown";
                         
-                        // 1. Grab Jellyfin's native genre scan first
                         string genres = track.Genres != null && track.Genres.Any() ? string.Join(",", track.Genres) : "Unknown";
                         string language = "unknown";
 
-                        // 2. Extract embedded ID3 tags directly from Essentia's metadata pool
                         if (doc.RootElement.TryGetProperty("metadata", out var metadata) && metadata.TryGetProperty("tags", out var tags))
                         {
-                            // Aggressively hunt for language, then fallback to the Script tag (e.g., "Taml")
                             if (tags.TryGetProperty("language", out var langArray) && langArray.ValueKind == JsonValueKind.Array && langArray.GetArrayLength() > 0)
                                 language = langArray[0].GetString()?.ToLower() ?? "unknown";
                             else if (tags.TryGetProperty("lang", out var shortLangArray) && shortLangArray.ValueKind == JsonValueKind.Array && shortLangArray.GetArrayLength() > 0)
@@ -124,7 +131,6 @@ namespace SymSmartQueue.Tasks
                             else if (tags.TryGetProperty("script", out var scriptArray) && scriptArray.ValueKind == JsonValueKind.Array && scriptArray.GetArrayLength() > 0)
                                 language = scriptArray[0].GetString()?.ToLower() ?? "unknown";
 
-                            // Fallback for Genre if Jellyfin's native scan missed it
                             if (genres == "Unknown" && tags.TryGetProperty("genre", out var genreArray) && genreArray.ValueKind == JsonValueKind.Array && genreArray.GetArrayLength() > 0)
                             {
                                 genres = genreArray[0].GetString() ?? "Unknown";
@@ -174,8 +180,8 @@ namespace SymSmartQueue.Tasks
                         _dbManager.SaveAcousticData(track.Id.ToString(), bpm, danceability, aggressive, happy, party, relaxed, sad, electronic, acoustic, voice, rhythmClass, genres, language);
                         savedCount++;
                         
-                        _logger.LogInformation("[SYM Engine] Parsed '{Name}' | BPM: {Bpm} | Happy: {Happy} | Party: {Party} | Voice: {Voice} | Rhythm: {Rhythm} | Lang: {Lang}", 
-                            track.Name, Math.Round(bpm), Math.Round(happy, 2), Math.Round(party, 2), Math.Round(voice, 2), rhythmClass, language);
+                        _logger.LogInformation("[SYM Engine] Parsed '{Name}' | BPM: {Bpm} | Happy: {Happy} | Party: {Party} | Voice: {Voice} | Lang: {Lang}", 
+                            track.Name, Math.Round(bpm), Math.Round(happy, 2), Math.Round(party, 2), Math.Round(voice, 2), language);
 
                         File.Delete(tempJsonPath); 
                     }

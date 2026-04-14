@@ -13,7 +13,7 @@
         "changelog": "Initial release with Docker self-compilation engine.",
         "targetAbi": "10.8.0.0",
         "sourceUrl": "https://github.com/thirdu9/SYM-Smart-Queue/releases/download/v1.1.0/SymSmartQueue_v1.1.0.zip",
-        "checksum": "3fc93995ad9a4c2525de7ea484d06b16",
+        "checksum": "5866fa57553a8eca570e0365e4a98c5d",
         "timestamp": "2024-05-15T00:00:00Z"
       }
     ]
