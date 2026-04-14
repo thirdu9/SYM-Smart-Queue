@@ -97,6 +97,7 @@ namespace SymSmartQueue.Tasks
                         process.StartInfo.Arguments = $"\"{audioFilePath}\" \"{tempJsonPath}\" \"{profileYaml}\"";
                         process.StartInfo.UseShellExecute = false;
                         process.StartInfo.CreateNoWindow = true;
+                        process.StartInfo.EnvironmentVariables["LD_LIBRARY_PATH"] = symDir;
                         process.StartInfo.RedirectStandardOutput = true;
                         process.StartInfo.RedirectStandardError = true;
 
