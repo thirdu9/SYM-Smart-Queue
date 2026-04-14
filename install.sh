@@ -7,7 +7,7 @@ echo "Starting fast installation targeting: $SYM_DIR"
 
 # 1. Download the complete payload (Binary + Models)
 echo "Downloading ML engine and models..."
-curl -L -o "$SYM_DIR/sym_payload.zip" "https://github.com/thirdu9/SYM-Smart-Queue/releases/download/Bin-files/Sym_Queue_Bin.zip"
+curl -L -o "$SYM_DIR/Sym_Queue_Bin.zip" "https://github.com/thirdu9/SYM-Smart-Queue/releases/download/Bin-files/Sym_Queue_Bin.zip"
 
 # 2. Extract and clean up
 echo "Extracting payload..."
