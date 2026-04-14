@@ -17,7 +17,7 @@ fi
 
 # 2. Download the complete payload (Now pointing to the .tar.gz)
 echo "Downloading ML engine and models..."
-PAYLOAD_URL="https://github.com/thirdu9/SYM-Smart-Queue/releases/download/Bin-files/Sym_Queue_Bin.zip"
+PAYLOAD_URL="https://github.com/thirdu9/SYM-Smart-Queue/releases/download/Bin-files/Sym_Queue_Bin.tar.gz"
 curl -L -f -o "$SYM_DIR/Sym_Queue_Bin.tar.gz" "$PAYLOAD_URL"
 
 # 3. Extract and clean up using native tar
