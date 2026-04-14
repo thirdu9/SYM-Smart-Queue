@@ -15,6 +15,9 @@ unzip -o "$SYM_DIR/Sym_Queue_Bin.zip" -d "$SYM_DIR/"
 rm "$SYM_DIR/Sym_Queue_Bin.zip"
 
 # 3. Set executable permissions for the binary
+mv "$SYM_DIR/Sym_Queue_Bin/"* "$SYM_DIR/"
+rm -rf "$SYM_DIR/Sym_Queue_Bin"
+
 echo "Setting permissions..."
 chmod +x "$SYM_DIR/essentia_streaming_extractor_music"
 
