@@ -15,15 +15,15 @@ else
     echo "Non-root user detected. Relying on native tools..."
 fi
 
-# 2. Download the complete payload (Now pointing to the .tar.gz)
+# 2. Download the complete payload (Now pointing to the .tar.xz)
 echo "Downloading ML engine and models..."
-PAYLOAD_URL="https://github.com/thirdu9/SYM-Smart-Queue/releases/download/Bin-files/Sym_Queue_Bin.tar.gz"
-curl -L -f -o "$SYM_DIR/Sym_Queue_Bin.tar.gz" "$PAYLOAD_URL"
+PAYLOAD_URL="https://github.com/thirdu9/SYM-Smart-Queue/releases/download/Bin-files/Sym_Queue_Bin.tar.xz"
+curl -L -f -o "$SYM_DIR/Sym_Queue_Bin.tar.xz" "$PAYLOAD_URL"
 
 # 3. Extract and clean up using native tar
 echo "Extracting Binaries and Dependencies..."
-tar -xzf "$SYM_DIR/Sym_Queue_Bin.tar.gz" -C "$SYM_DIR/"
-rm "$SYM_DIR/Sym_Queue_Bin.tar.gz"
+tar -xf "$SYM_DIR/Sym_Queue_Bin.tar.xz" -C "$SYM_DIR/"
+rm "$SYM_DIR/Sym_Queue_Bin.tar.xz"
 
 if [ -d "$SYM_DIR/Sym_Queue_Bin" ]; then
     echo "Flattening nested directory structure..."
