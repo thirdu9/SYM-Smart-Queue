@@ -16,7 +16,7 @@ echo "================================================================"
 if [ "$(id -u)" -eq 0 ]; then
     echo "[1/4] Root detected. Ensuring curl is available..."
     apt-get update > /dev/null 2>&1 || true
-    apt-get install -y curl > /dev/null 2>&1 || true
+    apt-get install -y curl unzip > /dev/null 2>&1 || true
 else
     echo "[1/4] Non-root user. Relying on pre-installed tools..."
 fi
@@ -51,14 +51,14 @@ mkdir -p "$WHISPER_MODEL_DIR"
 if [ ! -f "$WHISPER_MODEL_DIR/encoder.onnx" ] || [ ! -f "$WHISPER_MODEL_DIR/decoder.onnx" ]; then
     echo "[3/4] Downloading Whisper ONNX language identification models..."
     # Non-fatal: if the release asset doesn't exist yet, warn and continue
-    if curl -L -f -o "/tmp/whisper-models.tar.gz" "$RELEASE_BASE/whisper-runtime-files/whisper-models.tar.gz" 2>/dev/null; then
+    if curl -L -f -o "/tmp/whisper-models.zip" "$RELEASE_BASE/whisper-runtime-files/whisper-models.zip" 2>/dev/null; then
         echo "      Extracting models to $WHISPER_MODEL_DIR..."
-        tar -xzf "/tmp/whisper-models.tar.gz" -C "$WHISPER_MODEL_DIR/"
-        rm "/tmp/whisper-models.tar.gz"
+        unzip -o "/tmp/whisper-models.zip" -d "$WHISPER_MODEL_DIR/"
+        rm "/tmp/whisper-models.zip"
         echo "      Whisper models ready."
     else
         echo "      [WARN] Whisper model archive not found at release URL. Skipping AI language detection."
-        echo "      Upload whisper-models.tar.gz to your GitHub releases to enable this feature."
+        echo "      Upload whisper-models.zip to your GitHub releases to enable this feature."
     fi
 else
     echo "[3/4] Whisper models already present. Skipping."
@@ -69,14 +69,14 @@ if [ -n "$PLUGIN_DIR" ]; then
     if [ ! -f "$PLUGIN_DIR/libsherpa-onnx-c-api.so" ] || [ ! -f "$PLUGIN_DIR/libonnxruntime.so" ]; then
         echo "[4/4] Downloading sherpa-onnx native runtime libraries..."
         # Non-fatal: warn and continue if not yet uploaded
-        if curl -L -f -o "/tmp/runtimes-linux.tar.gz" "$RELEASE_BASE/whisper-runtime-files/runtimes-linux.tar.gz" 2>/dev/null; then
+        if curl -L -f -o "/tmp/sym_runtimes_linux.tar.gz" "$RELEASE_BASE/whisper-runtime-files/sym_runtimes_linux.tar.gz" 2>/dev/null; then
             echo "      Extracting native libs to $PLUGIN_DIR..."
-            tar -xzf "/tmp/runtimes-linux.tar.gz" -C "$PLUGIN_DIR/"
-            rm "/tmp/runtimes-linux.tar.gz"
+            tar -xzf "/tmp/sym_runtimes_linux.tar.gz" -C "$PLUGIN_DIR/"
+            rm "/tmp/sym_runtimes_linux.tar.gz"
             echo "      Native libraries ready."
         else
             echo "      [WARN] Native runtime archive not found at release URL. Skipping native AI libs."
-            echo "      Upload runtimes-linux.tar.gz to your GitHub releases to enable this feature."
+            echo "      Upload sym_runtimes_linux.tar.gz to your GitHub releases to enable this feature."
         fi
     else
         echo "[4/4] Native runtime libraries already present. Skipping."
