@@ -23,22 +23,26 @@ fi
 
 RELEASE_BASE="https://github.com/thirdu9/SYM-Smart-Queue/releases/download"
 
-# 2. Download and extract the Essentia ML engine + profile
-echo "[2/4] Downloading Essentia engine and analysis profile..."
-curl -L -f -o "$SYM_DIR/Sym_Queue_Bin.tar.gz" "$RELEASE_BASE/Bin-files/Sym_Queue_Bin.tar.gz"
+# 2. Download and extract the Essentia ML engine + profile (skip if already present)
+if [ ! -f "$SYM_DIR/essentia_streaming_extractor_music" ] || [ ! -f "$SYM_DIR/profile.yaml" ]; then
+    echo "[2/4] Downloading Essentia engine and analysis profile..."
+    curl -L -f -o "$SYM_DIR/Sym_Queue_Bin.tar.gz" "$RELEASE_BASE/Bin-files/Sym_Queue_Bin.tar.gz"
 
-echo "      Extracting engine binaries..."
-tar -xzf "$SYM_DIR/Sym_Queue_Bin.tar.gz" -C "$SYM_DIR/"
-rm "$SYM_DIR/Sym_Queue_Bin.tar.gz"
+    echo "      Extracting engine binaries..."
+    tar -xzf "$SYM_DIR/Sym_Queue_Bin.tar.gz" -C "$SYM_DIR/"
+    rm "$SYM_DIR/Sym_Queue_Bin.tar.gz"
 
-if [ -d "$SYM_DIR/Sym_Queue_Bin" ]; then
-    echo "      Flattening nested directory..."
-    mv "$SYM_DIR/Sym_Queue_Bin/"* "$SYM_DIR/"
-    rm -rf "$SYM_DIR/Sym_Queue_Bin"
+    if [ -d "$SYM_DIR/Sym_Queue_Bin" ]; then
+        echo "      Flattening nested directory..."
+        mv "$SYM_DIR/Sym_Queue_Bin/"* "$SYM_DIR/"
+        rm -rf "$SYM_DIR/Sym_Queue_Bin"
+    fi
+
+    chmod +x "$SYM_DIR/essentia_streaming_extractor_music"
+    echo "      Essentia engine ready."
+else
+    echo "[2/4] Essentia engine already present. Skipping."
 fi
-
-chmod +x "$SYM_DIR/essentia_streaming_extractor_music"
-echo "      Essentia engine ready."
 
 # 3. Download and extract the Whisper ONNX language identification models
 WHISPER_MODEL_DIR="$SYM_DIR/models/whisper"
@@ -46,12 +50,16 @@ mkdir -p "$WHISPER_MODEL_DIR"
 
 if [ ! -f "$WHISPER_MODEL_DIR/encoder.onnx" ] || [ ! -f "$WHISPER_MODEL_DIR/decoder.onnx" ]; then
     echo "[3/4] Downloading Whisper ONNX language identification models..."
-    curl -L -f -o "/tmp/whisper-models.tar.gz" "$RELEASE_BASE/whisper-runtime-files/whisper-models.tar.gz"
-
-    echo "      Extracting models to $WHISPER_MODEL_DIR..."
-    tar -xzf "/tmp/whisper-models.tar.gz" -C "$WHISPER_MODEL_DIR/"
-    rm "/tmp/whisper-models.tar.gz"
-    echo "      Whisper models ready."
+    # Non-fatal: if the release asset doesn't exist yet, warn and continue
+    if curl -L -f -o "/tmp/whisper-models.tar.gz" "$RELEASE_BASE/whisper-runtime-files/whisper-models.tar.gz" 2>/dev/null; then
+        echo "      Extracting models to $WHISPER_MODEL_DIR..."
+        tar -xzf "/tmp/whisper-models.tar.gz" -C "$WHISPER_MODEL_DIR/"
+        rm "/tmp/whisper-models.tar.gz"
+        echo "      Whisper models ready."
+    else
+        echo "      [WARN] Whisper model archive not found at release URL. Skipping AI language detection."
+        echo "      Upload whisper-models.tar.gz to your GitHub releases to enable this feature."
+    fi
 else
     echo "[3/4] Whisper models already present. Skipping."
 fi
@@ -60,18 +68,21 @@ fi
 if [ -n "$PLUGIN_DIR" ]; then
     if [ ! -f "$PLUGIN_DIR/libsherpa-onnx-c-api.so" ] || [ ! -f "$PLUGIN_DIR/libonnxruntime.so" ]; then
         echo "[4/4] Downloading sherpa-onnx native runtime libraries..."
-        curl -L -f -o "/tmp/runtimes-linux.tar.gz" "$RELEASE_BASE/whisper-runtime-files/runtimes-linux.tar.gz"
-
-        echo "      Extracting native libs to $PLUGIN_DIR..."
-        tar -xzf "/tmp/runtimes-linux.tar.gz" -C "$PLUGIN_DIR/"
-        rm "/tmp/runtimes-linux.tar.gz"
-        echo "      Native libraries ready."
+        # Non-fatal: warn and continue if not yet uploaded
+        if curl -L -f -o "/tmp/runtimes-linux.tar.gz" "$RELEASE_BASE/whisper-runtime-files/runtimes-linux.tar.gz" 2>/dev/null; then
+            echo "      Extracting native libs to $PLUGIN_DIR..."
+            tar -xzf "/tmp/runtimes-linux.tar.gz" -C "$PLUGIN_DIR/"
+            rm "/tmp/runtimes-linux.tar.gz"
+            echo "      Native libraries ready."
+        else
+            echo "      [WARN] Native runtime archive not found at release URL. Skipping native AI libs."
+            echo "      Upload runtimes-linux.tar.gz to your GitHub releases to enable this feature."
+        fi
     else
         echo "[4/4] Native runtime libraries already present. Skipping."
     fi
 else
     echo "[4/4] PLUGIN_DIR not specified. Skipping native runtime download."
-    echo "      Pass the plugin DLL directory as the second argument to install native AI libs."
 fi
 
 echo ""
